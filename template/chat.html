@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Support Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; }
+        .chat-container { max-width: 600px; margin: 50px auto; }
+        .chat-box { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: white; }
+        .user-message { background: #d1e7dd; padding: 10px; margin: 5px; border-radius: 10px; text-align: right; }
+        .bot-message { background: #f8d7da; padding: 10px; margin: 5px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2 class="text-center">Mental Health Support Bot</h2>
+        <div id="chat-box" class="chat-box"></div>
+        <form id="chat-form" class="mt-3">
+            <div class="input-group">
+                <input type="text" id="user-input" class="form-control" placeholder="Type your message..." required>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const sessionId = 'session_' + new Date().getTime();
+            
+            $('#chat-form').submit(function(e) {
+                e.preventDefault();
+                let userMessage = $('#user-input').val();
+                if (userMessage.trim() === '') return;
+
+                $('#chat-box').append('<div class="user-message">' + userMessage + '</div>');
+                $('#user-input').val('');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/get_response',
+                    data: { msg: userMessage, session_id: sessionId },
+                    success: function(response) {
+                        $('#chat-box').append('<div class="bot-message">' + response + '</div>');
+                        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
